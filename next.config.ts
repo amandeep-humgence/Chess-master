@@ -10,7 +10,12 @@ const nextConfig: NextConfig = {
         pathname: '/uploads/**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
   },
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
+  },
+  compress: true,
 }
 
 export default nextConfig
