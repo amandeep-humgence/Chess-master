@@ -25,11 +25,12 @@ export const paymentService = {
     // Amount in paise (INR smallest unit)
     const amountInPaise = Math.round(tournament.entryFee * 100)
 
-    const order = await razorpay.orders.create({
+    const order = (await razorpay.orders.create({
       amount: amountInPaise,
       currency: 'INR',
       receipt: `chess_${tournamentId.slice(0, 8)}_${Date.now()}`,
-    })
+      payment_capture: true,
+    })) as { id: string }
 
     const payment = await paymentRepository.create({
       userId,

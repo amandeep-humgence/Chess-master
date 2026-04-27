@@ -25,6 +25,7 @@ interface RazorpayOptions {
   }) => void
   prefill?: { email?: string; name?: string }
   theme?: { color: string }
+  modal?: { ondismiss?: () => void; escape?: boolean }
 }
 
 interface Props {
@@ -66,6 +67,10 @@ export default function RazorpayCheckout({ tournament, userEmail, onSuccess, onE
         order_id: orderId,
         prefill: { email: userEmail },
         theme: { color: '#f0b429' },
+        modal: {
+          escape: false,
+          ondismiss: () => onError('Payment cancelled'),
+        },
         handler: async (response) => {
           try {
             await api.post('/api/payments/verify', {

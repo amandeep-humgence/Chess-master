@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Crown, Trophy, Users, Shield, ChevronRight, Calendar } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import api from '../lib/api'
@@ -29,8 +30,19 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/20 py-24 px-4 text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(240,180,41,0.12),transparent)]" />
+      <section className="relative overflow-hidden py-24 px-4 text-center">
+        {/* Background image */}
+        <Image
+          src="/images/home-page-banner.jpg"
+          alt="Chess tournament banner"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-slate-900/75" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(240,180,41,0.15),transparent)]" />
         <div className="relative mx-auto max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-sm text-amber-400">
             <Crown size={14} className="fill-amber-400" />

@@ -30,12 +30,11 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
     },
   })
 
-  const { data: userReg } = useQuery<RegistrationDTO | null>({
-    queryKey: ['my-registration', id],
+  const { data: myRegistrations } = useQuery<RegistrationDTO[]>({
+    queryKey: ['my-registrations'],
     queryFn: async () => {
-      if (!user) return null
-      const res = await api.get<{ data: RegistrationDTO[] }>('/api/users/me/profile')
-      return null
+      const res = await api.get<{ data: RegistrationDTO[] }>('/api/tournaments/registrations/mine')
+      return res.data.data
     },
     enabled: !!user,
   })
@@ -43,8 +42,10 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
   if (isLoading) return <PageSpinner />
   if (!tournament) return <div className="p-8 text-center text-slate-500">Tournament not found.</div>
 
+  const alreadyRegistered = registered ||
+    myRegistrations?.some((r) => r.tournamentId === id && r.status === 'CONFIRMED')
   const isFull = tournament.currentPlayers >= tournament.maxPlayers
-  const canRegister = user && tournament.status === 'UPCOMING' && !isFull && !registered
+  const canRegister = user && tournament.status === 'UPCOMING' && !isFull && !alreadyRegistered
 
   const handleSuccess = () => {
     setRegistered(true)
@@ -78,7 +79,7 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
 
         {/* Registration CTA */}
         <div className="border-t border-slate-700/50 pt-6">
-          {registered ? (
+          {alreadyRegistered ? (
             <div className="flex items-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-green-400">
               <CheckCircle size={20} />
               <div>
