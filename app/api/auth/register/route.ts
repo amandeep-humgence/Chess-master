@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { cookies } from 'next/headers'
 import { userDb } from '@/lib/db/user'
 import { hashPassword } from '@/lib/hash'

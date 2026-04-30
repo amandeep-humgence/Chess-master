@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { paymentDb } from '@/lib/db/payment'
 import { requireAuth } from '@/lib/auth-server'
 import { successResponse, handleError } from '@/lib/api-helpers'

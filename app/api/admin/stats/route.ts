@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { userDb } from '@/lib/db/user'
 import { tournamentDb } from '@/lib/db/tournament'
 import { registrationDb } from '@/lib/db/registration'

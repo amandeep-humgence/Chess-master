@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { registrationDb } from '@/lib/db/registration'
 import { requireAdmin } from '@/lib/auth-server'
 import { successResponse, handleError } from '@/lib/api-helpers'

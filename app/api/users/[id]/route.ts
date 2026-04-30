@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { userDb } from '@/lib/db/user'
 import { successResponse, errorResponse } from '@/lib/api-helpers'
 

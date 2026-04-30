@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { tournamentDb } from '@/lib/db/tournament'
 import { registrationDb } from '@/lib/db/registration'
 import { paymentDb } from '@/lib/db/payment'

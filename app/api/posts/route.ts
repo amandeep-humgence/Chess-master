@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { NextRequest } from 'next/server'
 import { postDb } from '@/lib/db/post'
 import { getSession, requireAuth } from '@/lib/auth-server'

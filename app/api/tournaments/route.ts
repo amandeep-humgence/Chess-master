@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { NextRequest } from 'next/server'
 import { tournamentDb } from '@/lib/db/tournament'
 import { requireAdmin } from '@/lib/auth-server'

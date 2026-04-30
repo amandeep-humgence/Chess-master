@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { contactDb } from '@/lib/db/contact'
 import { requireAdmin } from '@/lib/auth-server'
 import { successResponse, handleError } from '@/lib/api-helpers'

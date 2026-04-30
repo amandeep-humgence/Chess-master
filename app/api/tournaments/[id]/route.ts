@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { tournamentDb } from '@/lib/db/tournament'
 import { requireAdmin } from '@/lib/auth-server'
 import { successResponse, errorResponse, handleError } from '@/lib/api-helpers'

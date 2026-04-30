@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { userDb } from '@/lib/db/user'
 import { requireAuth } from '@/lib/auth-server'
 import { successResponse, handleError } from '@/lib/api-helpers'

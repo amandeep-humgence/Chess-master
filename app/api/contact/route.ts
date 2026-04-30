@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { contactDb } from '@/lib/db/contact'
 import { successResponse, errorResponse } from '@/lib/api-helpers'
 import { contactSchema } from '@/lib/validators/contact'

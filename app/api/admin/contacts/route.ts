@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { NextRequest } from 'next/server'
 import { contactDb } from '@/lib/db/contact'
 import { requireAdmin } from '@/lib/auth-server'

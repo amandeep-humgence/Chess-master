@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { paymentDb } from '@/lib/db/payment'
 import { verifyWebhookSignature } from '@/lib/razorpay'
 import { successResponse, errorResponse } from '@/lib/api-helpers'
