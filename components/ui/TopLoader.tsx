@@ -9,8 +9,8 @@ export default function TopLoader() {
   const [progress, setProgress] = useState(0)
   const prevPath = useRef(pathname)
   const started = useRef(false)
-  const tickRef = useRef<ReturnType<typeof setInterval>>()
-  const doneRef = useRef<ReturnType<typeof setTimeout>>()
+  const tickRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
+  const doneRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
