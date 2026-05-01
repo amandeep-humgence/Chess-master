@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { tournamentDb } from '@/lib/db/tournament'
 import { registrationDb } from '@/lib/db/registration'
 import { paymentDb } from '@/lib/db/payment'
-import { razorpay } from '@/lib/razorpay'
+import { getRazorpay } from '@/lib/razorpay'
 import { requireAuth } from '@/lib/auth-server'
 import { successResponse, errorResponse, handleError } from '@/lib/api-helpers'
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     const amountInPaise = Math.round(tournament.entryFee * 100)
-    const order = (await razorpay.orders.create({
+    const order = (await getRazorpay().orders.create({
       amount: amountInPaise,
       currency: 'INR',
       receipt: `chess_${tournamentId.slice(0, 8)}_${Date.now()}`,
