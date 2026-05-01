@@ -3,7 +3,7 @@
 import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Crown } from 'lucide-react'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import Avatar from '../../../components/ui/Avatar'
 import PostCard from '../../../components/social/PostCard'
 import { PageSpinner } from '../../../components/ui/Spinner'
@@ -14,18 +14,12 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
 
   const { data: user, isLoading } = useQuery<UserDTO>({
     queryKey: ['user-profile', id],
-    queryFn: async () => {
-      const res = await api.get<{ data: UserDTO }>(`/api/users/${id}`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.users.getById(id),
   })
 
   const { data: posts } = useQuery<PostDTO[]>({
     queryKey: ['user-posts', id],
-    queryFn: async () => {
-      const res = await api.get<{ data: PostDTO[] }>(`/api/users/${id}/posts`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.posts.byUser(id),
     enabled: !!user,
   })
 

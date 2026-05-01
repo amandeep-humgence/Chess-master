@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Rss } from 'lucide-react'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import { useAuthStore } from '../../lib/store/authStore'
 import PostCard from '../../components/social/PostCard'
 import CreatePostForm from '../../components/social/CreatePostForm'
@@ -23,8 +23,7 @@ export default function FeedPage() {
   } = useInfiniteQuery<PaginatedResponse<PostDTO>>({
     queryKey: ['feed'],
     queryFn: async ({ pageParam }) => {
-      const res = await api.get<{ data: PaginatedResponse<PostDTO> }>(`/api/posts?page=${pageParam}&limit=10`)
-      return res.data.data
+      return supabaseData.posts.feed(Number(pageParam), 10)
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>

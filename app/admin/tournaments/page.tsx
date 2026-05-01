@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import Button from '../../../components/ui/Button'
 import Modal from '../../../components/ui/Modal'
 import TournamentForm from '../../../components/tournament/TournamentForm'
@@ -18,25 +18,22 @@ export default function AdminTournamentsPage() {
 
   const { data: tournaments, isLoading } = useQuery<TournamentDTO[]>({
     queryKey: ['admin-tournaments'],
-    queryFn: async () => {
-      const res = await api.get<{ data: TournamentDTO[] }>('/api/tournaments')
-      return res.data.data
-    },
+    queryFn: () => supabaseData.tournaments.list(),
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: CreateTournamentPayload) => api.post('/api/tournaments', data),
+    mutationFn: (data: CreateTournamentPayload) => supabaseData.tournaments.create(data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-tournaments'] }); setCreateOpen(false) },
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateTournamentPayload> }) =>
-      api.put(`/api/tournaments/${id}`, data),
+      supabaseData.tournaments.update(id, data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-tournaments'] }); setEditing(null) },
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/api/tournaments/${id}`),
+    mutationFn: (id: string) => supabaseData.tournaments.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-tournaments'] }),
   })
 

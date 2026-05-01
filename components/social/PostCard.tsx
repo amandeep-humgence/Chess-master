@@ -9,7 +9,7 @@ import LikeButton from './LikeButton'
 import CommentSection from './CommentSection'
 import { timeAgo, getImageUrl } from '../../lib/utils'
 import { useAuthStore } from '../../lib/store/authStore'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import type { PostDTO } from '../../types'
 
 interface PostCardProps {
@@ -28,7 +28,7 @@ export default function PostCard({ post, onDeleted }: PostCardProps) {
 
   const handleDelete = async () => {
     if (!confirm('Delete this post?')) return
-    await api.delete(`/api/posts/${post.id}`)
+    await supabaseData.posts.remove(post.id)
     onDeleted?.(post.id)
     setMenuOpen(false)
   }

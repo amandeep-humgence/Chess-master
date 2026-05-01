@@ -1,10 +1,11 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Image from 'next/image'
 import { Image as ImageIcon, X, Send } from 'lucide-react'
 import Avatar from '../ui/Avatar'
 import Button from '../ui/Button'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import { useAuthStore } from '../../lib/store/authStore'
 import type { PostDTO } from '../../types'
 
@@ -38,13 +39,8 @@ export default function CreatePostForm({ onCreated }: Props) {
     if (!content.trim() && !imageFile) return
     setLoading(true)
     try {
-      const form = new FormData()
-      form.append('content', content.trim())
-      if (imageFile) form.append('image', imageFile)
-      const res = await api.post<{ data: PostDTO }>('/api/posts', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      onCreated(res.data.data)
+      const post = await supabaseData.posts.create(content.trim(), imageFile)
+      onCreated(post)
       setContent('')
       removeImage()
     } finally {
@@ -71,7 +67,7 @@ export default function CreatePostForm({ onCreated }: Props) {
 
           {preview && (
             <div className="relative mt-2 w-32 h-24 rounded-lg overflow-hidden">
-              <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+              <Image src={preview} alt="Preview" fill unoptimized className="object-cover" />
               <button
                 type="button"
                 onClick={removeImage}

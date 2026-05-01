@@ -19,14 +19,14 @@ export function formatCurrency(amount: number, currency = 'INR'): string {
 export function getAvatarUrl(avatar: string | null | undefined, apiBase?: string): string {
   if (!avatar) return '/default-avatar.svg'
   if (avatar.startsWith('http')) return avatar
-  const base = apiBase || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+  const base = apiBase || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   return `${base}${avatar}`
 }
 
 export function getImageUrl(imageUrl: string | null | undefined): string {
   if (!imageUrl) return ''
   if (imageUrl.startsWith('http')) return imageUrl
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   return `${base}${imageUrl}`
 }
 

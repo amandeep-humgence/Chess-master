@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import DataTable from '../../../components/admin/DataTable'
 import Avatar from '../../../components/ui/Avatar'
 import { formatDate } from '../../../lib/utils'
@@ -13,10 +13,7 @@ export default function AdminUsersPage() {
 
   const { data, isLoading } = useQuery<PaginatedResponse<UserDTO>>({
     queryKey: ['admin-users', page],
-    queryFn: async () => {
-      const res = await api.get<{ data: PaginatedResponse<UserDTO> }>(`/api/admin/users?page=${page}&limit=20`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.users.list(page, 20),
   })
 
   return (

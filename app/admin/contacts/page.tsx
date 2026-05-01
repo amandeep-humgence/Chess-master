@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckCheck } from 'lucide-react'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import { formatDate } from '../../../lib/utils'
 import { PageSpinner } from '../../../components/ui/Spinner'
 import Pagination from '../../../components/ui/Pagination'
@@ -15,14 +15,11 @@ export default function AdminContactsPage() {
 
   const { data, isLoading } = useQuery<PaginatedResponse<ContactMessageDTO>>({
     queryKey: ['admin-contacts', page],
-    queryFn: async () => {
-      const res = await api.get<{ data: PaginatedResponse<ContactMessageDTO> }>(`/api/admin/contacts?page=${page}&limit=20`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.contacts.list(page, 20),
   })
 
   const markRead = useMutation({
-    mutationFn: (id: string) => api.patch(`/api/admin/contacts/${id}/read`),
+    mutationFn: (id: string) => supabaseData.contacts.markRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-contacts'] }),
   })
 

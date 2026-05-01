@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MessageCircle, Send } from 'lucide-react'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import Avatar from '../ui/Avatar'
 import { timeAgo } from '../../lib/utils'
 import { useAuthStore } from '../../lib/store/authStore'
@@ -19,16 +19,12 @@ export default function CommentSection({ postId, commentsCount }: { postId: stri
 
   const { data: comments, isLoading } = useQuery<CommentDTO[]>({
     queryKey: ['comments', postId],
-    queryFn: async () => {
-      const res = await api.get<{ data: CommentDTO[] }>(`/api/posts/${postId}/comments`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.posts.comments(postId),
     enabled: open,
   })
 
   const addComment = useMutation({
-    mutationFn: (content: string) =>
-      api.post(`/api/posts/${postId}/comments`, { content }),
+    mutationFn: (content: string) => supabaseData.posts.addComment(postId, content),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['comments', postId] })
       setText('')

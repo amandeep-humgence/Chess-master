@@ -2,11 +2,10 @@
 
 import { useRef, useState } from 'react'
 import { useAuthStore } from '../../../lib/store/authStore'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import Input from '../../../components/ui/Input'
 import Button from '../../../components/ui/Button'
 import Avatar from '../../../components/ui/Avatar'
-import type { UserDTO } from '../../../types'
 import { Camera } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -34,18 +33,16 @@ export default function ProfilePage() {
     setSuccess(false)
     setError('')
     try {
-      const formData = new FormData()
-      Object.entries(form).forEach(([k, v]) => {
-        if (v) formData.append(k, v)
-      })
       const fileInput = fileRef.current
-      if (fileInput?.files?.[0]) formData.append('image', fileInput.files[0])
-
-      const res = await api.put<{ data: UserDTO }>('/api/users/me/profile', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const updatedMe = await supabaseData.users.updateProfile({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        bio: form.bio,
+        phone: form.phone,
+        chessRating: form.chessRating ? Number(form.chessRating) : undefined,
+        avatarFile: fileInput?.files?.[0],
       })
-      const updatedMe = await api.get<{ data: UserDTO }>('/api/auth/me')
-      setUser(updatedMe.data.data)
+      setUser(updatedMe)
       setSuccess(true)
     } catch (err) {
       setError((err as Error).message)

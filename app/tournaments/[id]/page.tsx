@@ -4,7 +4,7 @@ import { use, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { Calendar, MapPin, Users, Trophy, IndianRupee, ArrowLeft, CheckCircle } from 'lucide-react'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import { Badge } from '../../../components/ui/Badge'
 import Button from '../../../components/ui/Button'
 import { PageSpinner } from '../../../components/ui/Spinner'
@@ -24,18 +24,12 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
 
   const { data: tournament, isLoading } = useQuery<TournamentDTO>({
     queryKey: ['tournament', id],
-    queryFn: async () => {
-      const res = await api.get<{ data: TournamentDTO }>(`/api/tournaments/${id}`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.tournaments.get(id),
   })
 
   const { data: myRegistrations } = useQuery<RegistrationDTO[]>({
     queryKey: ['my-registrations'],
-    queryFn: async () => {
-      const res = await api.get<{ data: RegistrationDTO[] }>('/api/tournaments/registrations/mine')
-      return res.data.data
-    },
+    queryFn: () => supabaseData.registrations.mine(),
     enabled: !!user,
   })
 

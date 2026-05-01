@@ -1,21 +1,30 @@
 export const dynamic = 'force-dynamic'
 
-import { tournamentDb } from '@/lib/db/tournament'
-import { registrationDb } from '@/lib/db/registration'
-import { paymentDb } from '@/lib/db/payment'
 import { getRazorpay } from '@/lib/razorpay'
-import { requireAuth } from '@/lib/auth-server'
+import { createSupabaseAdminClient, createSupabaseRouteClient } from '@/lib/supabase/server'
 import { successResponse, errorResponse, handleError } from '@/lib/api-helpers'
 
 export async function POST(request: Request) {
   try {
-    const session = await requireAuth()
+    const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+    if (!token) return errorResponse('Unauthorized', 401)
+
+    const authed = createSupabaseRouteClient(token)
+    const admin = createSupabaseAdminClient()
+    const { data: authData, error: authError } = await authed.auth.getUser()
+    if (authError || !authData.user) return errorResponse('Unauthorized', 401)
+
     const body = await request.json()
     const { tournamentId } = body
 
     if (!tournamentId) return errorResponse('tournamentId is required', 400)
 
-    const tournament = await tournamentDb.findById(tournamentId)
+    const { data: tournament, error: tournamentError } = await admin
+      .from('tournaments')
+      .select('*')
+      .eq('id', tournamentId)
+      .single()
+    if (tournamentError) return errorResponse(tournamentError.message, 400)
     if (!tournament) return errorResponse('Tournament not found', 404)
     if (tournament.status !== 'UPCOMING' && tournament.status !== 'RUNNING') {
       return errorResponse('Tournament is not accepting registrations', 400)
@@ -24,7 +33,12 @@ export async function POST(request: Request) {
       return errorResponse('Tournament is full', 400)
     }
 
-    const existing = await registrationDb.findByUserAndTournament(session.id, tournamentId)
+    const { data: existing } = await admin
+      .from('tournament_registrations')
+      .select('*')
+      .eq('userId', authData.user.id)
+      .eq('tournamentId', tournamentId)
+      .maybeSingle()
     if (existing && existing.status === 'CONFIRMED') {
       return errorResponse('You are already registered for this tournament', 400)
     }
@@ -37,12 +51,13 @@ export async function POST(request: Request) {
       payment_capture: true,
     })) as { id: string }
 
-    const payment = await paymentDb.create({
-      userId: session.id,
+    const { data: payment, error: paymentError } = await admin.from('payments').insert({
+      userId: authData.user.id,
       tournamentId,
       amount: tournament.entryFee,
       razorpayOrderId: order.id,
-    })
+    }).select('*').single()
+    if (paymentError) return errorResponse(paymentError.message, 400)
 
     return successResponse(
       {

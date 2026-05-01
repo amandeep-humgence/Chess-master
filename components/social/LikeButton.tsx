@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Heart } from 'lucide-react'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import { cn } from '../../lib/utils'
 import { useAuthStore } from '../../lib/store/authStore'
 import { useRouter } from 'next/navigation'
@@ -26,8 +26,7 @@ export default function LikeButton({ postId, liked: initialLiked, count: initial
     if (pending) return
     setPending(true)
     try {
-      await api.post(`/api/posts/${postId}/like`)
-      const next = !liked
+      const next = await supabaseData.posts.toggleLike(postId)
       setLiked(next)
       setCount((c) => next ? c + 1 : c - 1)
       onToggle?.(next)

@@ -8,7 +8,7 @@ import {
   Layers, MessageSquare, CheckCircle2, ArrowRight,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import api from '../lib/api'
+import { supabaseData } from '../lib/supabase/data'
 import TournamentCard from '../components/tournament/TournamentCard'
 import type { TournamentDTO } from '../types'
 
@@ -70,8 +70,8 @@ export default function HomePage() {
   const { data, isLoading } = useQuery<TournamentDTO[]>({
     queryKey: ['tournaments', 'UPCOMING'],
     queryFn: async () => {
-      const res = await api.get<{ data: TournamentDTO[] }>('/api/tournaments?status=UPCOMING')
-      return res.data.data.slice(0, 3)
+      const data = await supabaseData.tournaments.list('UPCOMING')
+      return data.slice(0, 3)
     },
   })
 
@@ -92,7 +92,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-sm text-amber-400">
             <Crown size={14} className="fill-amber-400" />
-            India's Chess Tournament Platform
+            India&apos;s Chess Tournament Platform
           </div>
           <h1 className="mb-5 text-5xl font-extrabold tracking-tight text-slate-100 sm:text-6xl">
             Compete. Connect.{' '}
@@ -193,7 +193,7 @@ export default function HomePage() {
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-amber-500">Why ChessMaster?</p>
             <h2 className="mb-4 text-3xl font-bold text-slate-100">Built for Serious Players</h2>
             <p className="mb-8 text-slate-500 text-sm leading-relaxed">
-              We built ChessMaster to solve everything that's frustrating about managing and joining chess tournaments —
+              We built ChessMaster to solve everything that&apos;s frustrating about managing and joining chess tournaments -
               complicated registrations, slow payment processing, and no community to connect with afterward.
             </p>
             <ul className="space-y-3">
@@ -244,7 +244,7 @@ export default function HomePage() {
           <h2 className="mb-4 text-3xl font-bold text-slate-100">Join the Chess Community</h2>
           <p className="mb-8 text-slate-500 text-sm leading-relaxed max-w-lg mx-auto">
             Share game analysis, discuss tournament results, and follow top players on our social feed.
-            Chess isn't just about the board — it's about the community around it.
+            Chess isn&apos;t just about the board - it&apos;s about the community around it.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/feed" className="flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-6 py-3 text-sm font-medium text-amber-400 hover:bg-amber-500/20 transition-colors">
@@ -262,7 +262,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-4xl font-bold text-slate-100 mb-4">Ready to make your move?</h2>
           <p className="text-slate-400 mb-8 text-sm leading-relaxed">
-            Register today to join tournaments, earn prizes, and become part of India's fastest-growing chess community.
+            Register today to join tournaments, earn prizes, and become part of India&apos;s fastest-growing chess community.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/auth/register" className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-8 py-3.5 text-sm font-semibold text-slate-900 hover:bg-amber-400 transition-colors">

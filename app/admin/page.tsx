@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { Users, Trophy, CreditCard, FileText, TrendingUp, Play } from 'lucide-react'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import StatsCard from '../../components/admin/StatsCard'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { formatCurrency } from '../../lib/utils'
@@ -11,10 +11,7 @@ import type { DashboardStats } from '../../types'
 export default function AdminDashboardPage() {
   const { data, isLoading } = useQuery<DashboardStats>({
     queryKey: ['admin-stats'],
-    queryFn: async () => {
-      const res = await api.get<{ data: DashboardStats }>('/api/admin/stats')
-      return res.data.data
-    },
+    queryFn: () => supabaseData.getDashboardStats(),
   })
 
   if (isLoading) return <PageSpinner />

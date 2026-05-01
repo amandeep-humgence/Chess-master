@@ -1,19 +1,28 @@
 'use client'
 
 import { useEffect } from 'react'
-import api from '../../lib/api'
+import { supabase } from '../../lib/supabase/client'
+import { supabaseData } from '../../lib/supabase/data'
 import { useAuthStore } from '../../lib/store/authStore'
-import type { UserDTO } from '../../types'
 
 export default function AuthInitializer() {
   const { setUser, setLoading } = useAuthStore()
 
   useEffect(() => {
     setLoading(true)
-    api
-      .get<{ data: UserDTO }>('/api/auth/me')
-      .then((res) => setUser(res.data.data))
+    supabaseData.auth
+      .me()
+      .then((user) => setUser(user))
       .catch(() => setUser(null))
+
+    const { data } = supabase.auth.onAuthStateChange(() => {
+      supabaseData.auth
+        .me()
+        .then((user) => setUser(user))
+        .catch(() => setUser(null))
+    })
+
+    return () => data.subscription.unsubscribe()
   }, [setUser, setLoading])
 
   return null

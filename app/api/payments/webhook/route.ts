@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
-import { paymentDb } from '@/lib/db/payment'
 import { verifyWebhookSignature } from '@/lib/razorpay'
+import { createSupabaseAdminClient } from '@/lib/supabase/server'
 import { successResponse, errorResponse } from '@/lib/api-helpers'
 
 export async function POST(request: Request) {
@@ -19,10 +19,10 @@ export async function POST(request: Request) {
 
     if (event.event === 'payment.failed') {
       const orderId = event.payload.payment.entity.order_id
-      const payment = await paymentDb.findByRazorpayOrderId(orderId)
-      if (payment) {
-        await paymentDb.updateStatus(payment.id, { status: 'FAILED' })
-      }
+      await createSupabaseAdminClient()
+        .from('payments')
+        .update({ status: 'FAILED' })
+        .eq('razorpayOrderId', orderId)
     }
 
     return successResponse({ received: true })

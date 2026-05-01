@@ -1,13 +1,13 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { Trophy, CreditCard, User, CheckCircle } from 'lucide-react'
+import { Trophy, User, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import { useAuthStore } from '../../lib/store/authStore'
 import { Badge } from '../../components/ui/Badge'
 import StatsCard from '../../components/admin/StatsCard'
-import { formatDate, formatCurrency } from '../../lib/utils'
+import { formatDate } from '../../lib/utils'
 import type { RegistrationDTO } from '../../types'
 
 export default function DashboardPage() {
@@ -15,19 +15,11 @@ export default function DashboardPage() {
 
   const { data: registrations } = useQuery<RegistrationDTO[]>({
     queryKey: ['my-registrations'],
-    queryFn: async () => {
-      const res = await api.get<{ data: RegistrationDTO[] }>('/api/tournaments/registrations/mine')
-      return res.data.data
-    },
+    queryFn: () => supabaseData.registrations.mine(),
     enabled: !!user,
   })
 
-  const name = user?.profile
-    ? `${user.profile.firstName} ${user.profile.lastName}`
-    : user?.email || 'Player'
-
   const confirmed = registrations?.filter((r) => r.status === 'CONFIRMED').length ?? 0
-  const pending = registrations?.filter((r) => r.status === 'PENDING').length ?? 0
 
   return (
     <div>

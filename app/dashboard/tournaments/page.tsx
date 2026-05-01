@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Trophy, Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import { Badge } from '../../../components/ui/Badge'
 import { PageSpinner } from '../../../components/ui/Spinner'
 import { formatDate } from '../../../lib/utils'
@@ -12,10 +12,7 @@ import type { RegistrationDTO } from '../../../types'
 export default function MyTournamentsPage() {
   const { data, isLoading } = useQuery<RegistrationDTO[]>({
     queryKey: ['my-registrations'],
-    queryFn: async () => {
-      const res = await api.get<{ data: RegistrationDTO[] }>('/api/tournaments/registrations/mine')
-      return res.data.data
-    },
+    queryFn: () => supabaseData.registrations.mine(),
   })
 
   if (isLoading) return <PageSpinner />

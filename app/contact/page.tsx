@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useState } from 'react'
 import { Mail, MessageSquare, CheckCircle } from 'lucide-react'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import Input from '../../components/ui/Input'
 import Button from '../../components/ui/Button'
 
@@ -27,7 +27,7 @@ export default function ContactPage() {
   const onSubmit = async (data: FormData) => {
     try {
       setError('')
-      await api.post('/api/contact', data)
+      await supabaseData.contacts.create(data)
       setSent(true)
     } catch (err) {
       setError((err as Error).message)

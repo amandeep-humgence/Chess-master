@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Crown, Menu, X, User, LogOut, LayoutDashboard, Shield } from 'lucide-react'
 import { useAuthStore } from '../../lib/store/authStore'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import Avatar from '../ui/Avatar'
 import { cn } from '../../lib/utils'
 
@@ -25,7 +25,7 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const handleLogout = async () => {
-    await api.post('/api/auth/logout')
+    await supabaseData.auth.logout()
     clearUser()
     router.push('/')
   }

@@ -6,6 +6,7 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import TournamentForm from '@/components/tournament/TournamentForm'
+import type { TournamentDTO } from '@/types'
 
 describe('TournamentForm', () => {
   const mockOnSubmit = jest.fn()
@@ -34,7 +35,7 @@ describe('TournamentForm', () => {
   it('renders "Update Tournament" button when initial data is provided', () => {
     render(
       <TournamentForm
-        initial={{ title: 'Test', id: 'tournament-1' } as any}
+        initial={{ title: 'Test', id: 'tournament-1' } as Partial<TournamentDTO> as TournamentDTO}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
       />
@@ -90,7 +91,7 @@ describe('TournamentForm', () => {
           entryFee: 200,
           prizePool: 3000,
           maxPlayers: 16,
-        } as any}
+        } as Partial<TournamentDTO> as TournamentDTO}
         onSubmit={mockOnSubmit}
         onCancel={mockOnCancel}
       />

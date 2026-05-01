@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Trophy } from 'lucide-react'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import TournamentCard from '../../components/tournament/TournamentCard'
 import StatusFilter from '../../components/tournament/StatusFilter'
 import { PageSpinner } from '../../components/ui/Spinner'
@@ -17,9 +17,7 @@ export default function TournamentsPage() {
   const { data, isLoading } = useQuery<TournamentDTO[]>({
     queryKey: ['tournaments', filter],
     queryFn: async () => {
-      const query = filter !== 'ALL' ? `?status=${filter}` : ''
-      const res = await api.get<{ data: TournamentDTO[] }>(`/api/tournaments${query}`)
-      return res.data.data
+      return supabaseData.tournaments.list(filter !== 'ALL' ? filter : undefined)
     },
   })
 

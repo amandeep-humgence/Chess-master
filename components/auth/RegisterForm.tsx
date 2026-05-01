@@ -5,11 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import api from '../../lib/api'
+import { supabaseData } from '../../lib/supabase/data'
 import { useAuthStore } from '../../lib/store/authStore'
 import Input from '../ui/Input'
 import Button from '../ui/Button'
-import type { UserDTO } from '../../types'
 import { useState } from 'react'
 
 const schema = z.object({
@@ -33,8 +32,8 @@ export default function RegisterForm() {
   const onSubmit = async (data: FormData) => {
     try {
       setServerError('')
-      const res = await api.post<{ data: UserDTO }>('/api/auth/register', data)
-      setUser(res.data.data)
+      const user = await supabaseData.auth.register(data)
+      setUser(user)
       router.push('/dashboard')
     } catch (err) {
       setServerError((err as Error).message)

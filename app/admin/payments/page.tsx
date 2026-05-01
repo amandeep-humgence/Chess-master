@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import DataTable from '../../../components/admin/DataTable'
 import { Badge } from '../../../components/ui/Badge'
 import { formatDate, formatCurrency } from '../../../lib/utils'
@@ -13,10 +13,7 @@ export default function AdminPaymentsPage() {
 
   const { data, isLoading } = useQuery<PaginatedResponse<PaymentDTO>>({
     queryKey: ['admin-payments', page],
-    queryFn: async () => {
-      const res = await api.get<{ data: PaginatedResponse<PaymentDTO> }>(`/api/admin/payments?page=${page}&limit=20`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.payments.list(page, 20),
   })
 
   return (

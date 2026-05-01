@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
-import api from '../../../lib/api'
+import { supabaseData } from '../../../lib/supabase/data'
 import { formatDate } from '../../../lib/utils'
 import { PageSpinner } from '../../../components/ui/Spinner'
 import Pagination from '../../../components/ui/Pagination'
@@ -21,14 +21,11 @@ export default function AdminPostsPage() {
 
   const { data, isLoading } = useQuery<AdminPostsResult>({
     queryKey: ['admin-posts', page],
-    queryFn: async () => {
-      const res = await api.get<{ data: AdminPostsResult }>(`/api/admin/posts?page=${page}&limit=20`)
-      return res.data.data
-    },
+    queryFn: () => supabaseData.posts.listAdmin(page, 20),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/api/admin/posts/${id}`),
+    mutationFn: (id: string) => supabaseData.posts.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-posts'] }),
   })
 

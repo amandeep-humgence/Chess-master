@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import Button from '../ui/Button'
-import api from '../../lib/api'
+import { supabase } from '../../lib/supabase/client'
 import type { TournamentDTO } from '../../types'
 
 declare global {
@@ -52,11 +52,17 @@ export default function RazorpayCheckout({ tournament, userEmail, onSuccess, onE
       const loaded = await loadRazorpayScript()
       if (!loaded) { onError('Failed to load payment gateway'); return }
 
-      const res = await api.post<{ data: { orderId: string; amount: number; currency: string; keyId: string } }>(
-        '/api/payments/create-order',
-        { tournamentId: tournament.id }
-      )
-      const { orderId, amount, currency, keyId } = res.data.data
+      const token = (await supabase.auth.getSession()).data.session?.access_token
+      if (!token) { onError('Please sign in to continue'); return }
+
+      const res = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ tournamentId: tournament.id }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.message || 'Unable to create payment order')
+      const { orderId, amount, currency, keyId } = json.data
 
       const rzp = new window.Razorpay({
         key: keyId,
@@ -73,12 +79,18 @@ export default function RazorpayCheckout({ tournament, userEmail, onSuccess, onE
         },
         handler: async (response) => {
           try {
-            await api.post('/api/payments/verify', {
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-              tournamentId: tournament.id,
+            const verifyRes = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                tournamentId: tournament.id,
+              }),
             })
+            const verifyJson = await verifyRes.json()
+            if (!verifyRes.ok) throw new Error(verifyJson.message || 'Payment verification failed')
             onSuccess()
           } catch (err) {
             onError((err as Error).message)
